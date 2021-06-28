@@ -27,7 +27,7 @@ More features will be available in the future.
 ## How do I use it?
 
 Twason is currently in development and may contain bugs, but it is globally usable. Actually, I'm using it on [my Twitch channel](https://twitch.tv/jdeuchnord).
-The simplest (and safest) way to use it is to use the Docker image: `deuchnord/twason`.
+The simplest (and safest) way to use it is to use the Docker image: [`deuchnord/twason`](https://hub.docker.com/r/deuchnord/twason).
 A Docker-Compose file is also available for facility.
 
 ### About the Twitch token
