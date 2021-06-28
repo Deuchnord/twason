@@ -4,11 +4,13 @@ from .config import get_config, TimerStrategy
 from random import shuffle
 from datetime import datetime, timedelta
 
+config = None
+
 
 @irc3.plugin
 class TwitchBot:
     def __init__(self, bot):
-        self.config = get_config()
+        self.config = config
         self.messages_stack = []
         self.bot = bot
         self.log = self.bot.log

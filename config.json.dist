@@ -1,0 +1,22 @@
+{
+  "nickname": "yourbot",
+  "channel": "yourchannel",
+  "command_prefix": "!",
+  "help": true,
+  "commands": [
+    {
+      "name": "ping",
+      "message": "Pong @{author} Kappa"
+    }
+  ],
+  "timer": {
+    "between": {
+      "time": 10,
+      "messages": 10
+    },
+    "strategy": "round-robin",
+    "messages": [
+      "Hello World! HeyGuys",
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  bot:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    env:
+      TWITCH_TOKEN: 'SET_THIS_TOKEN'
+    volumes:
+      - './config:/home/bot/config'

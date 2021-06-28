@@ -33,12 +33,12 @@ class Timer:
         time_between: int = 10,
         msgs_between: int = 10,
         strategy: TimerStrategy = TimerStrategy.ROUND_ROBIN,
-        messages: [str] = []
+        messages: [str] = None
      ):
         self.time_between = time_between
         self.msgs_between = msgs_between
         self.strategy = strategy
-        self.messages = messages
+        self.messages = messages if messages else []
 
     @classmethod
     def from_dict(cls, param: dict):
@@ -98,7 +98,7 @@ class Config:
         )
 
 
-def get_config():
-    with open('config.json', 'r') as config_file:
+def get_config(file_path: str):
+    with open(file_path, 'r') as config_file:
         token = environ['TWITCH_TOKEN']
         return Config.from_dict(json.loads(config_file.read()), token)
