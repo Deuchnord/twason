@@ -1,4 +1,4 @@
-# Twason - The KISS Twitch bot
+# ![Twason - The KISS Twitch bot](logo.svg)
 
 Twason is an opinionated Twitch chatbot created with the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle) in mind.
 It is based on the [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) protocol and is configurable in just one JSON file.
