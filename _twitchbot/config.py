@@ -26,15 +26,22 @@ class Command:
     name: str
     message: str
     aliases: [str]
+    disabled: bool
 
-    def __init__(self, name: str, message: str, aliases: [str] = []):
+    def __init__(self, name: str, message: str, aliases: [str] = None, disabled: bool = False):
         self.name = name
         self.message = message
-        self.aliases = aliases
+        self.aliases = aliases if aliases is not None else []
+        self.disabled = disabled
 
     @classmethod
     def from_dict(cls, params: dict):
-        return Command(params['name'], params['message'], params.get('aliases', []))
+        return Command(
+            params['name'],
+            params['message'],
+            params.get('aliases', []),
+            params.get('disabled', False)
+        )
 
 
 class TimerStrategy(Enum):
@@ -102,8 +109,13 @@ class Config:
         help_command = Command("help", "Voici les commandes disponibles : ")
 
         for command in params.get('commands', []):
-            commands.append(Command.from_dict(command))
-            help_command.message = "%s %s%s" % (help_command.message, commands_prefix, command['name'])
+            c = Command.from_dict(command)
+
+            if c.disabled:
+                continue
+
+            commands.append(c)
+            help_command.message = "%s %s%s" % (help_command.message, commands_prefix, c.name)
 
         if params.get('help', True):
             commands.append(help_command)
