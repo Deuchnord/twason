@@ -19,19 +19,22 @@ import json
 
 from os import environ
 from enum import Enum
+from typing import Union
 
 
 class Command:
     name: str
     message: str
+    aliases: [str]
 
-    def __init__(self, name: str, message: str):
+    def __init__(self, name: str, message: str, aliases: [str] = []):
         self.name = name
         self.message = message
+        self.aliases = aliases
 
     @classmethod
     def from_dict(cls, params: dict):
-        return Command(params['name'], params['message'])
+        return Command(params['name'], params['message'], params.get('aliases', []))
 
 
 class TimerStrategy(Enum):
@@ -113,6 +116,16 @@ class Config:
             commands,
             Timer.from_dict(params.get('timer', {}))
         )
+
+    def find_command(self, command: str) -> Union[None, Command]:
+        if command.startswith(self.command_prefix):
+            command = command[1:]
+
+        for c in self.commands:
+            if c.name == command or command in c.aliases:
+                return c
+
+        return None
 
 
 def get_config(file_path: str):

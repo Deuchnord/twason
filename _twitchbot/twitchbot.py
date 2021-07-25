@@ -17,7 +17,7 @@
 
 import irc3
 
-from .config import get_config, TimerStrategy
+from .config import TimerStrategy
 from random import shuffle
 from datetime import datetime, timedelta
 
@@ -57,12 +57,11 @@ class TwitchBot:
 
     @irc3.event(irc3.rfc.PRIVMSG)
     def on_msg(self, target, mask, data, **_):
-        print(target)
-        for command in self.config.commands:
-            if ('%s ' % data.lower()).startswith('%s%s ' % (self.config.command_prefix, command.name.lower())):
-                print('%s: %s%s' % (mask, self.config.command_prefix, command.name))
-                self.bot.privmsg(target, self._parse_variables(command.message, mask))
-                break
+        command = self.config.find_command(data.lower().split(' ')[0])
+
+        if command is not None:
+            print('%s: %s%s' % (mask, self.config.command_prefix, command.name))
+            self.bot.privmsg(target, self._parse_variables(command.message, mask))
 
         self.nb_messages_since_timer += 1
         self.play_timer()
