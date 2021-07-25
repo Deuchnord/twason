@@ -32,7 +32,6 @@ def main() -> int:
     args = get_arguments()
 
     twitchbot.config = get_config(args.config)
-    print(twitchbot.config.timer.messages)
     bot = irc3.IrcBot.from_config({
         'nick': twitchbot.config.nickname,
         'password': twitchbot.config.token,

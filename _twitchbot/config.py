@@ -37,7 +37,7 @@ class Command:
     @classmethod
     def from_dict(cls, params: dict):
         return Command(
-            params['name'],
+            params.get('name'),
             params['message'],
             params.get('aliases', []),
             params.get('disabled', False)
@@ -53,27 +53,32 @@ class Timer:
     time_between: int
     msgs_between: int
     strategy: TimerStrategy
-    messages: [str]
+    pool: [Command]
 
     def __init__(
         self,
         time_between: int = 10,
         msgs_between: int = 10,
         strategy: TimerStrategy = TimerStrategy.ROUND_ROBIN,
-        messages: [str] = None
+        pool: [Command] = None
      ):
         self.time_between = time_between
         self.msgs_between = msgs_between
         self.strategy = strategy
-        self.messages = messages if messages else []
+        self.pool = pool if pool else []
 
     @classmethod
     def from_dict(cls, param: dict):
+        pool = []
+
+        for c in param.get('pool', []):
+            pool.append(Command.from_dict(c))
+
         return Timer(
             time_between=param.get('between', {}).get('time', 10),
             msgs_between=param.get('between', {}).get('messages', 10),
             strategy=TimerStrategy(param.get('strategy', 'round-robin')),
-            messages=param.get('messages', [])
+            pool=pool
         )
 
 
@@ -86,13 +91,13 @@ class Config:
     timer: Timer
 
     def __init__(
-        self,
-        channel: str,
-        nickname: str,
-        token: str,
-        command_prefix: str,
-        commands: [Command],
-        timer: Timer
+            self,
+            channel: str,
+            nickname: str,
+            token: str,
+            command_prefix: str,
+            commands: [Command],
+            timer: Timer
     ):
         self.nickname = nickname
         self.channel = channel
@@ -103,21 +108,32 @@ class Config:
 
     @classmethod
     def from_dict(cls, params: dict, token: str):
+        timer = Timer.from_dict(params.get('timer', {}))
+
         commands_prefix = params.get('command_prefix', '!')
         commands = []
 
         help_command = Command("help", "Voici les commandes disponibles : ")
 
         for command in params.get('commands', []):
-            c = Command.from_dict(command)
+            command = Command.from_dict(command)
 
-            if c.disabled:
+            if command.disabled:
                 continue
 
-            commands.append(c)
-            help_command.message = "%s %s%s" % (help_command.message, commands_prefix, c.name)
+            commands.append(command)
 
+        for command in timer.pool:
+            if command.name is None:
+                continue
+
+            commands.append(command)
+
+        # Generate help command
         if params.get('help', True):
+            for command in commands:
+                help_command.message = "%s %s%s" % (help_command.message, commands_prefix, command.name)
+
             commands.append(help_command)
 
         return Config(
@@ -126,7 +142,7 @@ class Config:
             token,
             commands_prefix,
             commands,
-            Timer.from_dict(params.get('timer', {}))
+            timer
         )
 
     def find_command(self, command: str) -> Union[None, Command]:

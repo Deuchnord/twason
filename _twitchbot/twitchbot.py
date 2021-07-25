@@ -67,10 +67,9 @@ class TwitchBot:
         self.play_timer()
 
     def play_timer(self):
-        print(self.messages_stack)
         if not self.messages_stack:
             print('Filling the timer messages stack in')
-            self.messages_stack = self.config.timer.messages.copy()
+            self.messages_stack = self.config.timer.pool.copy()
             if self.config.timer.strategy == TimerStrategy.SHUFFLE:
                 print('Shuffle!')
                 shuffle(self.messages_stack)
@@ -79,10 +78,10 @@ class TwitchBot:
             datetime.now() < self.last_timer_date + timedelta(minutes=self.config.timer.time_between):
             return
 
-        message = self.messages_stack.pop(0)
+        command = self.messages_stack.pop(0)
 
-        print("Timer: %s" % message)
-        self.bot.privmsg('#%s' % self.config.channel, message)
+        print("Timer: %s" % command.message)
+        self.bot.privmsg('#%s' % self.config.channel, command.message)
 
         self.nb_messages_since_timer = 0
         self.last_timer_date = datetime.now()
