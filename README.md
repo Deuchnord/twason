@@ -51,6 +51,7 @@ Below is the complete configuration reference:
   "commands": [                                 // a list of commands that your bot will recognize and respond to (empty by default)
     {
       "name": "ping",                           // the command name - spaces are not recommended here (even though they are technically accepted)
+      "aliases": ["pong"],
       "message": "Pong @{author} Kappa"         // the message the bot must send when someone invokes this command ('{author}' will be replaced with the user who invoked the command)
     }
   ],
@@ -60,8 +61,13 @@ Below is the complete configuration reference:
       "messages": 10                            // the minimum number of messages that the chat members must have sent between two messages (defaults to 10)
     },
     "strategy": "round-robin",                  // the strategy used to send the messages: "round-robin" or "shuffle" (defaults to "round-robin")
-    "messages": [                               // the list of messages to send (empty by default)
-      "Hello World! HeyGuys",
+                                                // the messages are actually commands with the same options as above
+    "pool": [                                   // a list of commands to send (empty by default)
+      {
+        "name": "hello",
+        "aliases": ["hi"],
+        "message": "Hello World! HeyGuys"
+      }
     ]
   }
 }

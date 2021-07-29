@@ -6,6 +6,7 @@
   "commands": [
     {
       "name": "ping",
+      "aliases": ["pong"],
       "message": "Pong @{author} Kappa"
     }
   ],
@@ -15,8 +16,12 @@
       "messages": 10
     },
     "strategy": "round-robin",
-    "messages": [
-      "Hello World! HeyGuys",
+    "pool": [
+          {
+              "name": "hello",
+              "aliases": ["hi"],
+              "Hello World! HeyGuys"
+          }
     ]
   }
 }
