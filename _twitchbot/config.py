@@ -72,7 +72,9 @@ class Timer:
         pool = []
 
         for c in param.get('pool', []):
-            pool.append(Command.from_dict(c))
+            command = Command.from_dict(c)
+            if not command.disabled:
+                pool.append(command)
 
         return Timer(
             time_between=param.get('between', {}).get('time', 10),
