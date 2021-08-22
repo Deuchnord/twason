@@ -35,7 +35,7 @@ def main() -> int:
     bot = irc3.IrcBot.from_config({
         'nick': twitchbot.config.nickname,
         'password': twitchbot.config.token,
-        'autojoins': [twitchbot.config.channel],
+        'autojoins': [],
         'host': TWITCH_IRC_SERVER,
         'port': TWITCH_IRC_PORT,
         'ssl': True,

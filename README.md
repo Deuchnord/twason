@@ -69,6 +69,33 @@ Below is the complete configuration reference:
         "message": "Hello World! HeyGuys"
       }
     ]
+  },
+  "moderator": {
+    // The configuration of the moderator (see bellow for more information)
   }
 }
 ```
+
+### The Moderator
+
+Twason has features to help you moderate your chat automatically against most of the nuisance that streamers may face to.
+Any moderation feature has to be activated in the configuration in the `moderator` section of the `config.json` file, and have the same options:
+
+```json5
+{
+  "moderation-feature": { // replace the name with the moderation feature name
+    "activate": false, // set this to true to activate the feature
+    "decision": "delete",
+    "message": "Calm down, {{author}}" // this message will be sent in the chat when a member becomes a pain in the ass
+  }
+}
+```
+
+Some moderation features may include more options. In this case, they have to be included in the same way.
+
+The available moderation features are the following:
+
+- `caps-lock`: moderate the messages written in CAPS LOCK
+  Additional options:
+  - `min_size`: the minimum size of the message to moderate
+  - `threshold`: the percentage of capital letters that will trigger the moderation
