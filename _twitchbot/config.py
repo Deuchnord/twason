@@ -148,8 +148,10 @@ class Config:
         )
 
     def find_command(self, command: str) -> Union[None, Command]:
-        if command.startswith(self.command_prefix):
-            command = command[1:]
+        if not command.startswith(self.command_prefix):
+            return None
+
+        command = command[1:]
 
         for c in self.commands:
             if c.name == command or command in c.aliases:
