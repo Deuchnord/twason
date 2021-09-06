@@ -20,7 +20,7 @@
           {
               "name": "hello",
               "aliases": ["hi"],
-              "Hello World! HeyGuys"
+              "message": "Hello World! HeyGuys"
           }
     ]
   }
