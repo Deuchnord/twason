@@ -86,7 +86,7 @@ Any moderation feature has to be activated in the configuration in the `moderato
   "moderation-feature": { // replace the name with the moderation feature name
     "activate": false, // set this to true to activate the feature
     "decision": "delete",
-    "message": "Calm down, {{author}}" // this message will be sent in the chat when a member becomes a pain in the ass
+    "message": "Calm down, {author}" // this message will be sent in the chat when a member becomes a pain in the ass
   }
 }
 ```
