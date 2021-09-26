@@ -17,7 +17,11 @@
 
 import irc3
 
+from . import utils
+
 from .config import TimerStrategy
+from .moderator import ModerationDecision, Moderator
+
 from random import shuffle
 from datetime import datetime, timedelta
 
@@ -26,7 +30,7 @@ config = None
 
 @irc3.plugin
 class TwitchBot:
-    def __init__(self, bot):
+    def __init__(self, bot: irc3.IrcBot):
         self.config = config
         self.messages_stack = []
         self.bot = bot
@@ -44,24 +48,24 @@ class TwitchBot:
         print('connection lost')
 
     @staticmethod
-    def _parse_variables(in_str: str, mask: str = None):
-        variables = {
-            'author': mask.split('!')[0]
-        }
-
-        for key in variables:
-            value = variables[key]
+    def _parse_variables(in_str: str, **kwargs):
+        for key in kwargs:
+            value = kwargs[key]
             in_str = in_str.replace('{%s}' % key, value)
 
         return in_str
 
     @irc3.event(irc3.rfc.PRIVMSG)
-    def on_msg(self, target, mask, data, **_):
+    def on_msg(self, mask: str = None, target: str = None, data: str = None, tags: str = None, **_):
+        author = mask.split('!')[0]
         command = self.config.find_command(data.lower().split(' ')[0])
+        tags_dict = utils.parse_tags(tags)
 
         if command is not None:
-            print('%s: %s%s' % (mask, self.config.command_prefix, command.name))
-            self.bot.privmsg(target, self._parse_variables(command.message, mask))
+            print('%s: %s%s' % (author, self.config.command_prefix, command.name))
+            self.bot.privmsg(target, self._parse_variables(command.message, author=author))
+        elif tags_dict.get('mod') == '0':
+            self.moderate(tags_dict, data, author, target)
 
         self.nb_messages_since_timer += 1
         self.play_timer()
@@ -86,6 +90,67 @@ class TwitchBot:
         self.nb_messages_since_timer = 0
         self.last_timer_date = datetime.now()
 
+    def moderate(self, tags: {str: str}, msg: str, author: str, channel: str):
+        print(tags)
+        def delete_msg(mod: Moderator):
+            print("[DELETE (reason: %s)] %s: %s" % (mod.get_name(), author, msg))
+            self.bot.privmsg(
+                channel,
+                "/delete %s" % tags['id']
+            )
+
+        def timeout(mod: Moderator):
+            print("[TIMEOUT (reason: %s)] %s: %s" % (mod.get_name(), author, msg))
+            self.bot.privmsg(
+                channel,
+                "/timeout %s %d %s" % (
+                    author,
+                    mod.timeout_duration,
+                    self._parse_variables(mod.message, author=author)
+                )
+            )
+
+        # Ignore emotes-only messages
+        if tags.get('emote-only', '0') == '1':
+            return
+
+        message_to_moderate = msg
+
+        # Remove emotes from message before moderating
+        for emote in tags.get('emotes', '').split('/'):
+            if emote == '':
+                break
+
+            for indices in emote.split(':')[1].split(','):
+                [first, last] = indices.split('-')
+                first, last = int(first), int(last)
+                if first == 0:
+                    message_to_moderate = message_to_moderate[last + 1:]
+                else:
+                    message_to_moderate = message_to_moderate[:first - 1] + message_to_moderate[last + 1:]
+
+        for moderator in self.config.moderators:
+            vote = moderator.vote(message_to_moderate)
+            if vote == ModerationDecision.ABSTAIN:
+                continue
+            if vote == ModerationDecision.DELETE_MSG:
+                delete_msg(moderator)
+            if vote == ModerationDecision.TIMEOUT_USER:
+                timeout(moderator)
+
+            self.bot.privmsg(channel, self._parse_variables(moderator.message, author=author))
+            break
+
     @irc3.event(irc3.rfc.JOIN)
     def on_join(self, mask, channel, **_):
         print('JOINED %s as %s' % (channel, mask))
+
+    @irc3.event(irc3.rfc.CONNECTED)
+    def on_connected(self, **_):
+        for line in [
+            "CAP REQ :twitch.tv/commands",
+            "CAP REQ :twitch.tv/tags"
+        ]:
+            self.bot.send_line(line)
+
+        self.bot.join('#%s' % self.config.channel)

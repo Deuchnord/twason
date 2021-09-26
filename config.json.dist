@@ -1,27 +1,36 @@
 {
-  "nickname": "yourbot",
-  "channel": "yourchannel",
-  "command_prefix": "!",
-  "help": true,
-  "commands": [
-    {
-      "name": "ping",
-      "aliases": ["pong"],
-      "message": "Pong @{author} Kappa"
-    }
-  ],
-  "timer": {
-    "between": {
-      "time": 10,
-      "messages": 10
-    },
-    "strategy": "round-robin",
-    "pool": [
-          {
-              "name": "hello",
-              "aliases": ["hi"],
-              "message": "Hello World! HeyGuys"
-          }
-    ]
-  }
+    "nickname": "yourbot",
+        "channel": "yourchannel",
+        "command_prefix": "!",
+        "help": true,
+        "commands": [
+        {
+            "name": "ping",
+            "aliases": ["pong"],
+            "message": "Pong @{author} Kappa"
+        }
+        ],
+        "timer": {
+            "between": {
+                "time": 10,
+                "messages": 10
+            },
+            "strategy": "round-robin",
+            "pool": [
+            {
+                "name": "hello",
+                "aliases": ["hi"],
+                "message": "Hello World! HeyGuys"
+            }
+            ]
+        },
+        "moderator": {
+            "caps-lock": {
+                "activate": true,
+                "min-size": 5,
+                "threshold": 50,
+                "decision": "delete",
+                "message": "DON'T SHOUT LIKE THAT, {author}!!!"
+            }
+        }
 }

@@ -21,6 +21,8 @@ from os import environ
 from enum import Enum
 from typing import Union
 
+from .moderator import Moderator, CapsLockModerator, ModerationDecision
+
 
 class Command:
     name: str
@@ -91,15 +93,17 @@ class Config:
     command_prefix: str
     commands: [Command]
     timer: Timer
+    moderators: [Moderator]
 
     def __init__(
-            self,
-            channel: str,
-            nickname: str,
-            token: str,
-            command_prefix: str,
-            commands: [Command],
-            timer: Timer
+        self,
+        channel: str,
+        nickname: str,
+        token: str,
+        command_prefix: str,
+        commands: [Command],
+        timer: Timer,
+        moderators: [Moderator]
     ):
         self.nickname = nickname
         self.channel = channel
@@ -107,6 +111,7 @@ class Config:
         self.command_prefix = command_prefix
         self.commands = commands
         self.timer = timer
+        self.moderators = moderators
 
     @classmethod
     def from_dict(cls, params: dict, token: str):
@@ -131,6 +136,26 @@ class Config:
 
             commands.append(command)
 
+        moderators = []
+        for moderator in params.get('moderator', []):
+            decision_str = params['moderator']['caps-lock'].get("decision", "delete")
+            if decision_str == "delete":
+                decision = ModerationDecision.DELETE_MSG
+            elif decision_str == "timeout":
+                decision = ModerationDecision.TIMEOUT_USER
+            else:
+                print("WARNING: %s moderator's decision is invalid, it has been deactivated!")
+                decision = ModerationDecision.ABSTAIN
+
+            if moderator == 'caps-lock':
+                moderators.append(CapsLockModerator(
+                    params['moderator']['caps-lock'].get("message", "{author}, stop the caps lock!"),
+                    params['moderator']['caps-lock'].get("min-size", 5),
+                    params['moderator']['caps-lock'].get("threshold", 50),
+                    decision,
+                    params['moderator']['caps-lock'].get("duration", None)
+                ))
+
         # Generate help command
         if params.get('help', True):
             for command in commands:
@@ -144,7 +169,8 @@ class Config:
             token,
             commands_prefix,
             commands,
-            timer
+            timer,
+            moderators
         )
 
     def find_command(self, command: str) -> Union[None, Command]:
