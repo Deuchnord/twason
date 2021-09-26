@@ -97,5 +97,5 @@ The available moderation features are the following:
 
 - `caps-lock`: moderate the messages written in CAPS LOCK
   Additional options:
-  - `min_size`: the minimum size of the message to moderate
+  - `min-size`: the minimum size of the message to moderate
   - `threshold`: the percentage of capital letters that will trigger the moderation
