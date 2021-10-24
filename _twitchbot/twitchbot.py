@@ -17,13 +17,15 @@
 
 import irc3
 
+from random import shuffle
+from datetime import datetime, timedelta
+
 from . import utils
 
 from .config import TimerStrategy
-from .moderator import ModerationDecision, Moderator
+from .moderator import ModerationDecision, Moderator, FloodModerator
+from . import twitch_message
 
-from random import shuffle
-from datetime import datetime, timedelta
 
 config = None
 
@@ -55,6 +57,10 @@ class TwitchBot:
 
         return in_str
 
+    # @irc3.event(r'^(?P<data>.+)$')
+    # def on_all(self, data):
+    #     print(data)
+
     @irc3.event(irc3.rfc.PRIVMSG)
     def on_msg(self, mask: str = None, target: str = None, data: str = None, tags: str = None, **_):
         author = mask.split('!')[0]
@@ -69,6 +75,17 @@ class TwitchBot:
 
         self.nb_messages_since_timer += 1
         self.play_timer()
+
+    @irc3.event(twitch_message.USERNOTICE)
+    def on_user_notice(self, tags: str, **_):
+        tags = utils.parse_tags(tags)
+        if tags.get('msg-id', None) == 'raid':
+            # Notice the Flood moderator a raid has just happened
+            for moderator in self.config.moderators:
+                if isinstance(moderator, FloodModerator) and moderator.raid_cooldown is not None:
+                    print("Raid received from %s. Disabling the Flood moderator." % tags.get('display-name'))
+                    moderator.declare_raid()
+                    break
 
     def play_timer(self):
         if not self.messages_stack:
@@ -91,7 +108,6 @@ class TwitchBot:
         self.last_timer_date = datetime.now()
 
     def moderate(self, tags: {str: str}, msg: str, author: str, channel: str):
-        print(tags)
         def delete_msg(mod: Moderator):
             print("[DELETE (reason: %s)] %s: %s" % (mod.get_name(), author, msg))
             self.bot.privmsg(
@@ -130,7 +146,7 @@ class TwitchBot:
                     message_to_moderate = message_to_moderate[:first - 1] + message_to_moderate[last + 1:]
 
         for moderator in self.config.moderators:
-            vote = moderator.vote(message_to_moderate)
+            vote = moderator.vote(message_to_moderate, author)
             if vote == ModerationDecision.ABSTAIN:
                 continue
             if vote == ModerationDecision.DELETE_MSG:
