@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 irc3 = "*"
+urlextract = "*"
 
 [dev-packages]
 
