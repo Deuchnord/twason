@@ -21,7 +21,7 @@ from os import environ
 from enum import Enum
 from typing import Union
 
-from .moderator import Moderator, CapsLockModerator, ModerationDecision
+from . import moderator
 
 
 class Command:
@@ -93,7 +93,7 @@ class Config:
     command_prefix: str
     commands: [Command]
     timer: Timer
-    moderators: [Moderator]
+    moderators: [moderator.Moderator]
 
     def __init__(
         self,
@@ -103,7 +103,7 @@ class Config:
         command_prefix: str,
         commands: [Command],
         timer: Timer,
-        moderators: [Moderator]
+        moderators: [moderator.Moderator]
     ):
         self.nickname = nickname
         self.channel = channel
@@ -137,23 +137,26 @@ class Config:
             commands.append(command)
 
         moderators = []
-        for moderator in params.get('moderator', []):
-            decision_str = params['moderator']['caps-lock'].get("decision", "delete")
-            if decision_str == "delete":
-                decision = ModerationDecision.DELETE_MSG
-            elif decision_str == "timeout":
-                decision = ModerationDecision.TIMEOUT_USER
-            else:
-                print("WARNING: %s moderator's decision is invalid, it has been deactivated!")
-                decision = ModerationDecision.ABSTAIN
-
-            if moderator == 'caps-lock':
-                moderators.append(CapsLockModerator(
-                    params['moderator']['caps-lock'].get("message", "{author}, stop the caps lock!"),
-                    params['moderator']['caps-lock'].get("min-size", 5),
-                    params['moderator']['caps-lock'].get("threshold", 50),
-                    decision,
-                    params['moderator']['caps-lock'].get("duration", None)
+        for mod in params.get('moderator', []):
+            moderator_config = params['moderator'][mod]
+            if mod == 'caps-lock':
+                moderators.append(moderator.CapsLockModerator(
+                    moderator_config.get("message", "{author}, stop the caps lock!"),
+                    cls.parse_decision(moderator_config.get("decision", "delete")),
+                    moderator_config.get("duration", None),
+                    moderator_config.get("min-size", 5),
+                    moderator_config.get("threshold", 50)
+                ))
+            if mod == 'flood':
+                moderators.append(moderator.FloodModerator(
+                    moderator_config.get("message", "{author}, stop the flood!"),
+                    cls.parse_decision(moderator_config.get("decision", "timeout")),
+                    moderator_config.get("duration", None),
+                    moderator_config.get("max-word-length", None),
+                    moderator_config.get("raid-cooldown", None),
+                    moderator_config.get("ignore-hashtags", False),
+                    moderator_config.get("max-msg-occurrences", None),
+                    moderator_config.get("min-time-between-occurrence", None)
                 ))
 
         # Generate help command
@@ -172,6 +175,17 @@ class Config:
             timer,
             moderators
         )
+
+    @classmethod
+    def parse_decision(cls, decision_str) -> moderator.ModerationDecision:
+        if decision_str == "delete":
+            decision = moderator.ModerationDecision.DELETE_MSG
+        elif decision_str == "timeout":
+            decision = moderator.ModerationDecision.TIMEOUT_USER
+        else:
+            print("WARNING: %s moderator's decision is invalid, it has been deactivated!")
+            decision = moderator.ModerationDecision.ABSTAIN
+        return decision
 
     def find_command(self, command: str) -> Union[None, Command]:
         if not command.startswith(self.command_prefix):
