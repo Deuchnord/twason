@@ -86,6 +86,7 @@ Any moderation feature has to be activated in the configuration in the `moderato
   "moderation-feature": { // replace the name with the moderation feature name
     "activate": false, // set this to true to activate the feature
     "decision": "delete", // the action to take: "delete" or "timeout"
+    "duration": 5, // if decision is timeout, the duration of the ban, in seconds
     "message": "Calm down, {author}" // this message will be sent in the chat when a member becomes a pain in the ass
   }
 }
@@ -99,3 +100,12 @@ The available moderation features are the following:
   Additional options:
   - `min-size`: the minimum size of the message to moderate
   - `threshold`: the percentage of capital letters that will trigger the moderation
+- `flood`: prevent the members of the chat to flood in your chat
+  Additional options:
+  - `max-word-length`: the maximum length of a word
+  - `ignore-hashtags`: if `true`, don't moderate the hashtags (defaults to `false`)
+  - to moderate the unwanted repetition of messages, you will need to add these two options:
+    - `max-msg-occurrences`: the number of times a message can be repeated before it gets moderated 
+    - `min-time-between-occurrence`: the time in which a message is counted, in seconds
+    a member will be moderated if they send `max-msg-occurrences` in `min-time-between-occurrence` seconds
+  - `raid-cooldown`: when a raid happens, the time in minutes of cooldown in which the flood is authorized
