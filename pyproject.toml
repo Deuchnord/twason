@@ -11,6 +11,7 @@ twason = 'twason.__main__:main'
 [tool.poetry.dependencies]
 python = "^3.12"
 irc3 = "^1.1"
+urlextract = "^1.9"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1"
