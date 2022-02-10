@@ -5,7 +5,7 @@ It is based on the [IRC](https://en.wikipedia.org/wiki/Internet_Relay_Chat) prot
 
 ## What the hell is that name!?
 
-Twason is a portmanteau based on two words: _Twitch_ (the platform the bot is designed for) and _Jason_ (as the JSON file that you use to wonfigure it).
+Twason is a portmanteau based on two words: _Twitch_ (the platform the bot is designed for) and _Jason_ (as the JSON file that you use to configure it).
 
 ## What features does it provide?
 
