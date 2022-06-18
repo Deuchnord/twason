@@ -20,8 +20,8 @@
 import argparse
 import irc3
 
-from _twitchbot.config import get_config
-from _twitchbot import twitchbot
+from . import twitchbot
+from .config import get_config
 
 
 TWITCH_IRC_SERVER = "irc.chat.twitch.tv"
@@ -44,7 +44,7 @@ def main() -> int:
 
     bot.run(forever=True)
 
-    return 0
+    exit(0)
 
 
 def get_arguments():

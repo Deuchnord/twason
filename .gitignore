@@ -1,3 +1,4 @@
 config.json
 docker-compose.yml
-__pycache__
+__pycache__dist
+/dist

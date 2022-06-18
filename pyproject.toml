@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "twason"
+version = "1.0.0"
+description = "The KISS Twitch bot"
+authors = ["Jérôme Deuchnord <jerome@deuchnord.fr>"]
+license = "AGPL-3.0-or-later"
+
+[tool.poetry.scripts]
+twason = 'twason.__main__:main'
+
+[tool.poetry.dependencies]
+python = "^3.7"
+irc3 = "^1.1.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,53 @@
+[[package]]
+name = "docopt"
+version = "0.6.2"
+description = "Pythonic argument parser, that will make you smile"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "irc3"
+version = "1.1.7"
+description = "plugable irc client library based on asyncio with DCC and SASL support"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+docopt = "*"
+venusian = ">=3.0"
+
+[package.extras]
+test = ["pytest-asyncio", "pytest-aiohttp", "feedparser", "requests", "pysocks", "twitter", "aiocron", "redis", "pytest", "irc3-plugins-test"]
+web = ["aiohttp"]
+
+[[package]]
+name = "venusian"
+version = "3.0.0"
+description = "A library for deferring decorator actions"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+docs = ["sphinx", "repoze.sphinx.autointerface"]
+testing = ["pytest", "pytest-cov", "coverage"]
+
+[metadata]
+lock-version = "1.1"
+python-versions = "^3.7"
+content-hash = "1d29e6d81c2ba0236771fc1ba673e7367e504279164d4f1556d492be4200f620"
+
+[metadata.files]
+docopt = [
+    {file = "docopt-0.6.2.tar.gz", hash = "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"},
+]
+irc3 = [
+    {file = "irc3-1.1.7-py3-none-any.whl", hash = "sha256:088b7be88817dee5d02e7e06c9dbf503c8e807a8cccc9b36b5be419918574cf1"},
+    {file = "irc3-1.1.7.tar.gz", hash = "sha256:6800c8876a889736961e199e834dc9933244affa20d4da086fb4b47f76984e12"},
+]
+venusian = [
+    {file = "venusian-3.0.0-py3-none-any.whl", hash = "sha256:06e7385786ad3a15c70740b2af8d30dfb063a946a851dcb4159f9e2a2302578f"},
+    {file = "venusian-3.0.0.tar.gz", hash = "sha256:f6842b7242b1039c0c28f6feef29016e7e7dd3caaeb476a193acf737db31ee38"},
+]
