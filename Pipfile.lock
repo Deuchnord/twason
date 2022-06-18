@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a2d7b3880bcd5122a42c9d5a0d2e5ade937786b9b36437bfefa0eba5ef0359fd"
+            "sha256": "3cd5a528e307bfbf3392d0a088d77f1bc83dc37db66b63cc7b3205a6a0df2bfa"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,11 +16,34 @@
         ]
     },
     "default": {
+        "appdirs": {
+            "hashes": [
+                "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41",
+                "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"
+            ],
+            "version": "==1.4.4"
+        },
         "docopt": {
             "hashes": [
                 "sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491"
             ],
             "version": "==0.6.2"
+        },
+        "filelock": {
+            "hashes": [
+                "sha256:7afc856f74fa7006a289fd10fa840e1eebd8bbff6bffb69c26c54a0512ea8cf8",
+                "sha256:bb2a1c717df74c48a2d00ed625e5a66f8572a3a30baacb7657add1d7bac4097b"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==3.3.2"
+        },
+        "idna": {
+            "hashes": [
+                "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff",
+                "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"
+            ],
+            "markers": "python_version >= '3.5'",
+            "version": "==3.3"
         },
         "irc3": {
             "hashes": [
@@ -29,6 +52,22 @@
             ],
             "index": "pypi",
             "version": "==1.1.7"
+        },
+        "uritools": {
+            "hashes": [
+                "sha256:28ffef82ce3b2793237d36e45aa7cde28dae6502f6a93fdbd05ede401520e279",
+                "sha256:576737664f51f82d5c2a98e25f6c5da73a57cc88326dbb686fd6c5d06ebd6c29"
+            ],
+            "markers": "python_version ~= '3.5'",
+            "version": "==3.0.2"
+        },
+        "urlextract": {
+            "hashes": [
+                "sha256:55c401dddf12aa65c09f0fcc02eff2be6a28f6e305797ed6ff4b8ed26100e860",
+                "sha256:669f07192584b841b49ba8868fbd6b00e7ddc28367d36a3d8ca8c8e429420748"
+            ],
+            "index": "pypi",
+            "version": "==1.4.0"
         },
         "venusian": {
             "hashes": [
