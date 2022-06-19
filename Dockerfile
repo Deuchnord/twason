@@ -8,15 +8,20 @@ ENV PATH="/home/bot:${PATH}"
 
 # Prepare environment
 RUN python -m pip install --upgrade pip
-RUN pip install pipenv
-COPY Pipfile.lock .
-RUN pipenv sync && pipenv run pip freeze > requirements.txt
+RUN pip install poetry
 
-# Add files
-RUN pip install -r requirements.txt && mkdir config
-COPY _twitchbot/ _twitchbot/
-COPY bot.py .
+COPY pyproject.toml .
+COPY poetry.lock .
+
+COPY twason/ twason/
+
+# Install project
+RUN poetry install && \
+    poetry build && \
+    pip install dist/*.whl
+
+RUN mkdir config
 
 USER bot
 
-CMD ["python", "bot.py", "--config=config/config.json"]
+CMD ["python", "-m", "twason", "--config=config/config.json"]
