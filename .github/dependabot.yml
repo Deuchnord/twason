@@ -7,8 +7,6 @@ updates:
     open-pull-requests-limit: 5
     schedule:
       interval: daily
-    reviewers:
-      - Deuchnord
     commit-message:
       prefix: chore
       include: scope
@@ -19,8 +17,6 @@ updates:
     target-branch: main
     schedule:
       interval: weekly
-    reviewers:
-      - Deuchnord
     commit-message:
       prefix: ci
       include: scope
