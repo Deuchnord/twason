@@ -30,7 +30,9 @@ class Command:
     aliases: [str]
     disabled: bool
 
-    def __init__(self, name: str, message: str, aliases: [str] = None, disabled: bool = False):
+    def __init__(
+        self, name: str, message: str, aliases: [str] = None, disabled: bool = False
+    ):
         self.name = name
         self.message = message
         self.aliases = aliases if aliases is not None else []
@@ -39,10 +41,10 @@ class Command:
     @classmethod
     def from_dict(cls, params: dict):
         return Command(
-            params.get('name'),
-            params['message'],
-            params.get('aliases', []),
-            params.get('disabled', False)
+            params.get("name"),
+            params["message"],
+            params.get("aliases", []),
+            params.get("disabled", False),
         )
 
 
@@ -62,8 +64,8 @@ class Timer:
         time_between: int = 10,
         msgs_between: int = 10,
         strategy: TimerStrategy = TimerStrategy.ROUND_ROBIN,
-        pool: [Command] = None
-     ):
+        pool: [Command] = None,
+    ):
         self.time_between = time_between
         self.msgs_between = msgs_between
         self.strategy = strategy
@@ -73,16 +75,16 @@ class Timer:
     def from_dict(cls, param: dict):
         pool = []
 
-        for c in param.get('pool', []):
+        for c in param.get("pool", []):
             command = Command.from_dict(c)
             if not command.disabled:
                 pool.append(command)
 
         return Timer(
-            time_between=param.get('between', {}).get('time', 10),
-            msgs_between=param.get('between', {}).get('messages', 10),
-            strategy=TimerStrategy(param.get('strategy', 'round-robin')),
-            pool=pool
+            time_between=param.get("between", {}).get("time", 10),
+            msgs_between=param.get("between", {}).get("messages", 10),
+            strategy=TimerStrategy(param.get("strategy", "round-robin")),
+            pool=pool,
         )
 
 
@@ -103,7 +105,7 @@ class Config:
         command_prefix: str,
         commands: [Command],
         timer: Timer,
-        moderators: [moderator.Moderator]
+        moderators: [moderator.Moderator],
     ):
         self.nickname = nickname
         self.channel = channel
@@ -115,14 +117,14 @@ class Config:
 
     @classmethod
     def from_dict(cls, params: dict, token: str):
-        timer = Timer.from_dict(params.get('timer', {}))
+        timer = Timer.from_dict(params.get("timer", {}))
 
-        commands_prefix = params.get('command_prefix', '!')
+        commands_prefix = params.get("command_prefix", "!")
         commands = []
 
         help_command = Command("help", "Voici les commandes disponibles : ")
 
-        for command in params.get('commands', []):
+        for command in params.get("commands", []):
             command = Command.from_dict(command)
 
             if command.disabled:
@@ -137,43 +139,53 @@ class Config:
             commands.append(command)
 
         moderators = []
-        for mod in params.get('moderator', []):
-            moderator_config = params['moderator'][mod]
-            if mod == 'caps-lock':
-                moderators.append(moderator.CapsLockModerator(
-                    moderator_config.get("message", "{author}, stop the caps lock!"),
-                    cls.parse_decision(moderator_config.get("decision", "delete")),
-                    moderator_config.get("duration", None),
-                    moderator_config.get("min-size", 5),
-                    moderator_config.get("threshold", 50)
-                ))
-            if mod == 'flood':
-                moderators.append(moderator.FloodModerator(
-                    moderator_config.get("message", "{author}, stop the flood!"),
-                    cls.parse_decision(moderator_config.get("decision", "timeout")),
-                    moderator_config.get("duration", None),
-                    moderator_config.get("max-word-length", None),
-                    moderator_config.get("raid-cooldown", None),
-                    moderator_config.get("ignore-hashtags", False),
-                    moderator_config.get("max-msg-occurrences", None),
-                    moderator_config.get("min-time-between-occurrence", None)
-                ))
+        for mod in params.get("moderator", []):
+            moderator_config = params["moderator"][mod]
+            if mod == "caps-lock":
+                moderators.append(
+                    moderator.CapsLockModerator(
+                        moderator_config.get(
+                            "message", "{author}, stop the caps lock!"
+                        ),
+                        cls.parse_decision(moderator_config.get("decision", "delete")),
+                        moderator_config.get("duration", None),
+                        moderator_config.get("min-size", 5),
+                        moderator_config.get("threshold", 50),
+                    )
+                )
+            if mod == "flood":
+                moderators.append(
+                    moderator.FloodModerator(
+                        moderator_config.get("message", "{author}, stop the flood!"),
+                        cls.parse_decision(moderator_config.get("decision", "timeout")),
+                        moderator_config.get("duration", None),
+                        moderator_config.get("max-word-length", None),
+                        moderator_config.get("raid-cooldown", None),
+                        moderator_config.get("ignore-hashtags", False),
+                        moderator_config.get("max-msg-occurrences", None),
+                        moderator_config.get("min-time-between-occurrence", None),
+                    )
+                )
 
         # Generate help command
-        if params.get('help', True):
+        if params.get("help", True):
             for command in commands:
-                help_command.message = "%s %s%s" % (help_command.message, commands_prefix, command.name)
+                help_command.message = "%s %s%s" % (
+                    help_command.message,
+                    commands_prefix,
+                    command.name,
+                )
 
             commands.append(help_command)
 
         return Config(
-            params.get('channel'),
-            params.get('nickname'),
+            params.get("channel"),
+            params.get("nickname"),
             token,
             commands_prefix,
             commands,
             timer,
-            moderators
+            moderators,
         )
 
     @classmethod
@@ -183,7 +195,9 @@ class Config:
         elif decision_str == "timeout":
             decision = moderator.ModerationDecision.TIMEOUT_USER
         else:
-            print("WARNING: %s moderator's decision is invalid, it has been deactivated!")
+            print(
+                "WARNING: %s moderator's decision is invalid, it has been deactivated!"
+            )
             decision = moderator.ModerationDecision.ABSTAIN
         return decision
 
@@ -201,6 +215,6 @@ class Config:
 
 
 def get_config(file_path: str):
-    with open(file_path, 'r') as config_file:
-        token = environ['TWITCH_TOKEN']
+    with open(file_path, "r") as config_file:
+        token = environ["TWITCH_TOKEN"]
         return Config.from_dict(json.loads(config_file.read()), token)

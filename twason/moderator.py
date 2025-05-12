@@ -33,7 +33,12 @@ class Moderator(ABC):
     message: str
     decision: ModerationDecision
 
-    def __init__(self, message: str, decision: ModerationDecision, timeout_duration: Union[None, int]):
+    def __init__(
+        self,
+        message: str,
+        decision: ModerationDecision,
+        timeout_duration: Union[None, int],
+    ):
         self.message = message
         self.timeout_duration = timeout_duration
         self.decision = decision
@@ -49,12 +54,12 @@ class Moderator(ABC):
 
 class CapsLockModerator(Moderator):
     def __init__(
-            self,
-            message: str,
-            decision: ModerationDecision,
-            timeout_duration: Union[None, int],
-            min_size: int,
-            threshold: int
+        self,
+        message: str,
+        decision: ModerationDecision,
+        timeout_duration: Union[None, int],
+        min_size: int,
+        threshold: int,
     ):
         super().__init__(message, decision, timeout_duration)
 
@@ -62,17 +67,17 @@ class CapsLockModerator(Moderator):
         self.threshold = threshold / 100
 
     def get_name(self) -> str:
-        return 'Caps Lock'
+        return "Caps Lock"
 
     def vote(self, msg: str, author: str) -> ModerationDecision:
-        msg = ''.join(filter(str.isalpha, msg))
+        msg = "".join(filter(str.isalpha, msg))
 
         if len(msg) < self.min_size:
             return ModerationDecision.ABSTAIN
 
         n = 0
         for char in msg:
-            if char.strip() == '':
+            if char.strip() == "":
                 continue
             if char == char.upper():
                 n += 1
@@ -85,15 +90,15 @@ class CapsLockModerator(Moderator):
 
 class FloodModerator(Moderator):
     def __init__(
-            self,
-            message: str,
-            decision: ModerationDecision,
-            timeout_duration: Union[None, int],
-            max_word_length: Union[None, int],
-            raid_cooldown: Union[None, int],
-            ignore_hashtags: bool,
-            max_msg_occurrences: Union[None, int],
-            min_time_between_occurrence: Union[None, int]
+        self,
+        message: str,
+        decision: ModerationDecision,
+        timeout_duration: Union[None, int],
+        max_word_length: Union[None, int],
+        raid_cooldown: Union[None, int],
+        ignore_hashtags: bool,
+        max_msg_occurrences: Union[None, int],
+        min_time_between_occurrence: Union[None, int],
     ):
         super().__init__(message, decision, timeout_duration)
         self.max_word_length = max_word_length
@@ -105,15 +110,18 @@ class FloodModerator(Moderator):
         self.last_msgs = []
 
     def get_name(self) -> str:
-        return 'Flood'
+        return "Flood"
 
     def vote(self, msg: str, author: str) -> ModerationDecision:
-        if self.raid_cooldown is not None and self.last_raid + timedelta(minutes=self.raid_cooldown) > datetime.now():
+        if (
+            self.raid_cooldown is not None
+            and self.last_raid + timedelta(minutes=self.raid_cooldown) > datetime.now()
+        ):
             return ModerationDecision.ABSTAIN
 
         if self.max_word_length is not None:
-            for word in msg.split(' '):
-                if word.startswith('#'):
+            for word in msg.split(" "):
+                if word.startswith("#"):
                     continue
                 if len(word) > self.max_word_length:
                     return ModerationDecision.TIMEOUT_USER
@@ -123,26 +131,32 @@ class FloodModerator(Moderator):
 
         clean_msg = None
         for last_msg in self.last_msgs:
-            if last_msg['first-occurrence'] + timedelta(seconds=self.min_time_between_occurrence) <= datetime.now():
+            if (
+                last_msg["first-occurrence"]
+                + timedelta(seconds=self.min_time_between_occurrence)
+                <= datetime.now()
+            ):
                 clean_msg = last_msg
                 break
 
-            if author != last_msg['author'] or msg != last_msg['message']:
+            if author != last_msg["author"] or msg != last_msg["message"]:
                 break
 
-            last_msg['occurrences'] += 1
-            if last_msg['occurrences'] >= self.max_msg_occurrences:
+            last_msg["occurrences"] += 1
+            if last_msg["occurrences"] >= self.max_msg_occurrences:
                 return ModerationDecision.TIMEOUT_USER
 
         if clean_msg is not None:
             self.last_msgs.remove(clean_msg)
 
-        self.last_msgs.append({
-            'first-occurrence': datetime.now(),
-            'author': author,
-            'message': msg,
-            'occurrences': 1
-        })
+        self.last_msgs.append(
+            {
+                "first-occurrence": datetime.now(),
+                "author": author,
+                "message": msg,
+                "occurrences": 1,
+            }
+        )
 
         return ModerationDecision.ABSTAIN
 

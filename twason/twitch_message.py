@@ -16,5 +16,6 @@
 
 from irc3.rfc import raw
 
-USERNOTICE = r'^(@(?P<tags>\S+) )?:(?P<mask>\S+) (?P<event>(USERNOTICE)) (?P<target>\S+)$'
-
+USERNOTICE = (
+    r"^(@(?P<tags>\S+) )?:(?P<mask>\S+) (?P<event>(USERNOTICE)) (?P<target>\S+)$"
+)

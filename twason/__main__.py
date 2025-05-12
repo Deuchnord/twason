@@ -32,15 +32,17 @@ def main() -> int:
     args = get_arguments()
 
     twitchbot.config = get_config(args.config)
-    bot = irc3.IrcBot.from_config({
-        'nick': twitchbot.config.nickname,
-        'password': twitchbot.config.token,
-        'autojoins': [],
-        'host': TWITCH_IRC_SERVER,
-        'port': TWITCH_IRC_PORT,
-        'ssl': True,
-        'includes': [twitchbot.__name__]
-    })
+    bot = irc3.IrcBot.from_config(
+        {
+            "nick": twitchbot.config.nickname,
+            "password": twitchbot.config.token,
+            "autojoins": [],
+            "host": TWITCH_IRC_SERVER,
+            "port": TWITCH_IRC_PORT,
+            "ssl": True,
+            "includes": [twitchbot.__name__],
+        }
+    )
 
     bot.run(forever=True)
 
@@ -49,10 +51,10 @@ def main() -> int:
 
 def get_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', '-c', type=str, default='config.json')
+    parser.add_argument("--config", "-c", type=str, default="config.json")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     exit(main())
