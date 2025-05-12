@@ -3,7 +3,7 @@ version: 2
 updates:
   - package-ecosystem: pip
     directory: "/"
-    target-branch: master
+    target-branch: main
     open-pull-requests-limit: 5
     schedule:
       interval: daily
@@ -16,7 +16,7 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     open-pull-requests-limit: 5
-    target-branch: master
+    target-branch: main
     schedule:
       interval: weekly
     reviewers:
