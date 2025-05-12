@@ -166,6 +166,16 @@ class Config:
                         moderator_config.get("min-time-between-occurrence", None),
                     )
                 )
+            if mod == 'links':
+                moderators.append(moderator.LinksModerator(
+                    moderator_config.get(
+                        "message",
+                        "{author}, your message contained forbidden links, it had to be removed for safety."
+                    ),
+                    cls.parse_decision(moderator_config.get("decision", "delete")),
+                    moderator_config.get("duration", None),
+                    moderator_config.get("authorized", [])
+                ))
 
         # Generate help command
         if params.get("help", True):
