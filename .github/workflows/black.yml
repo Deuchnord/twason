@@ -1,0 +1,19 @@
+name: Code style
+
+on:
+  push:
+    branches: [master, features]
+  pull_request:
+    branches: [master, features]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    name: Code Style
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - uses: psf/black@stable
