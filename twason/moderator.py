@@ -19,6 +19,9 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Union
 from datetime import datetime, timedelta
+from urlextract import URLExtract
+from fnmatch import fnmatch
+import re
 
 EPOCH = datetime(1970, 1, 1)
 
@@ -162,3 +165,52 @@ class FloodModerator(Moderator):
 
     def declare_raid(self):
         self.last_raid = datetime.now()
+
+
+class LinksModerator(Moderator):
+    def __init__(
+            self,
+            message: str,
+            decision: ModerationDecision,
+            timeout_duration: Union[None, int],
+            authorized_urls: [str]
+    ):
+        super().__init__(message, decision, timeout_duration)
+        self.authorized_urls = authorized_urls
+
+    def get_name(self) -> str:
+        return 'Link'
+
+    def vote(self, msg: str, author: str) -> ModerationDecision:
+        url_extractor = URLExtract()
+        links = url_extractor.find_urls(msg)
+
+        if len(links) == 0:
+            return ModerationDecision.ABSTAIN
+
+        if not self.are_urls_authorized(links):
+            return self.decision
+
+        return ModerationDecision.ABSTAIN
+
+    def are_urls_authorized(self, links: [str]) -> bool:
+
+        for link in links:
+            is_link_authorized = False
+            print(link)
+
+            for pattern in self.authorized_urls:
+                print(pattern)
+                if dump(fnmatch(link, pattern)) or dump(fnmatch(f"http://{link}", pattern)) or dump(fnmatch(f"https://{link}", pattern)):
+                    is_link_authorized = True
+                    break
+
+            if not is_link_authorized:
+                return False
+
+        return True
+
+
+def dump(what):
+    print(what)
+    return what
