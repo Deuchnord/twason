@@ -23,7 +23,6 @@ import irc3
 from . import twitchbot
 from .config import get_config
 
-
 TWITCH_IRC_SERVER = "irc.chat.twitch.tv"
 TWITCH_IRC_PORT = 6697
 
