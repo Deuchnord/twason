@@ -26,7 +26,6 @@ from .config import TimerStrategy
 from .moderator import ModerationDecision, Moderator, FloodModerator
 from . import twitch_message
 
-
 config = None
 
 
